@@ -13,14 +13,25 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var commentField: UITextField!
     
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         
+        commentField.delegate = self;
+        
         // Adopt a dark interface style.
         view.overrideUserInterfaceStyle = .dark
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        modalPresentationCapturesStatusBarAppearance = true
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
     }
     
     @IBAction func onSubmitButton(_ sender: Any) {
@@ -44,6 +55,11 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
     }
     
+    
+    @IBAction func onCancelButton(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @IBAction func onCameraButton(_ sender: Any) {
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -62,7 +78,7 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
         let image = info[.editedImage] as! UIImage
         
         let size = CGSize(width: 300, height: 300)
-        let scaledImage = image.af.imageScaled(to: size)
+        let scaledImage = image.af.imageAspectScaled(toFill: size)
         
         imageView.image = scaledImage
         
@@ -79,4 +95,11 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     */
 
+}
+
+extension CameraViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField ) -> Bool {
+        textField.resignFirstResponder();
+        return true;
+    }
 }
